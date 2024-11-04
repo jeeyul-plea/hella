@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: hella
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:./data/hella
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 100
+        show_sql: true
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: secret
+
+
+jwt:
+  secret: asolidjoiqwjdioweqjfofghewuifhenfk3rgjoiergjerhfguihio238981039oaspfjkjp02923i34eop1qnfmf
+  access:
+    expiration: 3000
+    header: Authorization
+  refresh:
+    expiration: 6000
+    header: Authorization-refresh

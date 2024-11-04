@@ -1,0 +1,21 @@
+<configuration>
+    <property name="LOG_PATH" value="/logs" />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%20.20t] %-5p %-50.50c{50} [%-20.20M:%4L] - %m%n</pattern>
+        </layout>
+    </appender>
+
+    <root>
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+    <logger name="com.zaxxer" level="info" />
+    <logger name="com.zaxxer.hikari.pool" level="info" />
+    <logger name="org.hibernate" level="info" />
+    <logger name="org.mybatis" level="info" />
+    <logger name="org.springframework" level="info" />
+    <logger name="org.apache.kafka" level="info" />
+
+</configuration>
