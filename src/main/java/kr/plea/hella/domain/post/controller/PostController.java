@@ -73,6 +73,22 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/likes/{postId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> likePost(@PathVariable("postId") Long postId) {
+        String username = getUsername();
+        postService.postLike(postId, username);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/likes/{postId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> undoLike(@PathVariable("postId") Long postId) {
+        String username = getUsername();
+        postService.undoLike(postId, username);
+        return ResponseEntity.ok().build();
+    }
+
     private static String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails)auth.getPrincipal();

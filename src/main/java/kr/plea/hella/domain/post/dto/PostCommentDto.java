@@ -25,6 +25,7 @@ public class PostCommentDto {
 
     @Enumerated(EnumType.STRING)
     private Category category;
+    private Integer like;
 
     private List<CommentFindDto> commentList = new ArrayList<>();
 

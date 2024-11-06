@@ -18,6 +18,8 @@ public record PostRequestDto(@Size(min = 1, max = 20, message = "1자 이상 20�
         return Post.builder()
             .title(this.title)
             .content(this.content)
-            .category(this.category).build();
+            .category(this.category)
+            .likeCount(0)
+            .build();
     }
 }

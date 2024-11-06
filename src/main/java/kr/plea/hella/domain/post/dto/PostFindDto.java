@@ -21,6 +21,7 @@ public class PostFindDto {
     private String content;
     private String Nickname;
     private LocalDateTime lastModified;
+    private Integer like;
 
     @Enumerated(EnumType.STRING)
     private Category category;
@@ -32,6 +33,7 @@ public class PostFindDto {
         this.category = post.getCategory();
         this.Nickname = post.getWriter().getNickName();
         this.lastModified = post.getLastModifiedDate();
+        this.like = post.getLikeCount();
     }
 
 }
