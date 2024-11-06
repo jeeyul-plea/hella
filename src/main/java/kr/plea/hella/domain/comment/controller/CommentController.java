@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,11 +43,35 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping()
+    @PatchMapping("/{commentId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> updateComment(@RequestBody CommentUpdateDto dto) {
+    public ResponseEntity<Void> updateComment(@RequestBody CommentUpdateDto dto,
+        @PathVariable("commentId") Long commentId) {
         String username = getUsername();
-        commentService.updateComment(username, dto);
+        commentService.updateComment(username, dto, commentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("{commentId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteComment(@PathVariable("commentId") Long commentId) {
+        commentService.deleteComment(commentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/likes/{commentId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> postLike(@PathVariable("commentId") Long commentId) {
+        String username = getUsername();
+        commentService.postLike(username, commentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("likes/{commentId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> undoLike(@PathVariable("commentId") Long commentId) {
+        String username = getUsername();
+        commentService.undoLike(username, commentId);
         return ResponseEntity.ok().build();
     }
 

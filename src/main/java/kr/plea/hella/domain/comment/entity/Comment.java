@@ -30,7 +30,7 @@ public class Comment extends BaseTimeEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "writer_nickname", referencedColumnName = "nickName")
+    @JoinColumn(name = "writer_nickname", referencedColumnName = "nickName", nullable = false)
     private Member writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,6 +44,10 @@ public class Comment extends BaseTimeEntity {
     private Boolean isChild;
 
     private Integer childOrder = 0;
+
+    private Boolean isDeleted;
+
+    private Integer likeCount;
 
     public void updateContent(String content) {
         this.content = content;
@@ -63,7 +67,19 @@ public class Comment extends BaseTimeEntity {
         return ++childOrder;
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public void setParentComment(Comment parentComment) {
         this.parentComment = parentComment;
+    }
+
+    public void addLike() {
+        likeCount += 1;
+    }
+
+    public void removeLike() {
+        likeCount -= 1;
     }
 }

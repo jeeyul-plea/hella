@@ -21,6 +21,7 @@ public enum ExceptionCode {
     NOT_CHANGED_NICKNAME(400, "최근 사용한 닉네임입니다. 다른 닉네임을 선택해 주세요."),
     POST_ALREADY_LIKED(400, "이미 게시글에 좋아요를 눌렀습니다."),
     COMMENT_ALREADY_LIKED(400, "이미 댓글에 좋아요를 눌렀습니다."),
+    COMMENT_DELETED(400, "삭제된 댓글입니다."),
 
     /*
      * # 401 UNAUTHORIZED
