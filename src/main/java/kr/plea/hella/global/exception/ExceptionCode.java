@@ -19,6 +19,8 @@ public enum ExceptionCode {
     MISS_MATCH_PASSWORD(400, "비밀번호가 일치하지 않습니다."),
     MISS_MATCH_USERID(400,"유저 아이디가 일치하지 않습니다."),
     NOT_CHANGED_NICKNAME(400, "최근 사용한 닉네임입니다. 다른 닉네임을 선택해 주세요."),
+    POST_ALREADY_LIKED(400, "이미 게시글에 좋아요를 눌렀습니다."),
+    COMMENT_ALREADY_LIKED(400, "이미 댓글에 좋아요를 눌렀습니다."),
 
     /*
      * # 401 UNAUTHORIZED
@@ -41,6 +43,7 @@ public enum ExceptionCode {
     USER_INACTIVE(404, "휴면 계정으로 전환된 사용자입니다."),
     POST_NOT_FOUND(404, "게시글이 존재하지 않습니다."),
     COMMENT_NOT_FOUND(404, "댓글이 존재하지 않습니다."),
+    POST_LIKE_NOT_FOUND(404,"게시글 좋아요가 존재하지 않습니다."),
 
     /*
      * # 405 METHOD NOT ALLOWED
