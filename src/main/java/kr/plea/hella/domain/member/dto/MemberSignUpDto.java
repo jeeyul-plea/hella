@@ -28,9 +28,13 @@ public record MemberSignUpDto(
 
     @NotEmpty(message = "나이를 입력해주세요")
     @Range(min = 0, max = 150)
-    Integer age) {
+    Integer age,
+
+    @NotEmpty(message = " 핸드폰 번호를 입력해주세요")
+    @Pattern(regexp = "^01[0-1,7]\\d{3,4}\\d{4}$", message = "올바른 번호를 입력해주세요")
+    String phoneNumber) {
 
     public Member toEntity() {
-        return Member.builder().username(username).password(password).name(name).nickName(nickName).age(age).build();
+        return Member.builder().username(username).password(password).name(name).nickName(nickName).age(age).phoneNumber(phoneNumber).build();
     }
 }

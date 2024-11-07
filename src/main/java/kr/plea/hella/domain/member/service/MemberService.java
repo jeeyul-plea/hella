@@ -13,7 +13,9 @@ import kr.plea.hella.domain.member.repository.MemberRepository;
 import kr.plea.hella.global.exception.ExceptionCode;
 import kr.plea.hella.global.exception.RootException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -25,6 +27,9 @@ public class MemberService {
 
     public void signUp(MemberSignUpDto dto) {
         Member member = dto.toEntity();
+        log.debug("회원명 : {}", member.getName());
+        String maskedPhoneNumber = maskPhoneNumber(member.getPhoneNumber());
+        log.debug("회원 전화번호 : {}", maskedPhoneNumber);
         member.setUserAuthority();
         member.encodePassword(passwordEncoder);
         if (isMemberExist(member.getUsername())) {
@@ -78,4 +83,10 @@ public class MemberService {
         return memberRepository.findByUsername(username).isPresent();
     }
 
+    public static String maskPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.length() < 7) {
+            throw new IllegalArgumentException("Invalid phone number");
+        } // 전화번호의 앞 3자리와 뒤 4자리를 제외한 부분을 '*'로 마스킹
+        return phoneNumber.substring(0, 3) + "****" + phoneNumber.substring(phoneNumber.length() - 4);
+    }
 }

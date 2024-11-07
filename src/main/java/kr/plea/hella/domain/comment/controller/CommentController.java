@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import kr.plea.hella.domain.comment.dto.CommentPostDto;
 import kr.plea.hella.domain.comment.dto.CommentUpdateDto;
 import kr.plea.hella.domain.comment.service.CommentService;
+import kr.plea.hella.domain.member.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,12 +26,14 @@ import lombok.RequiredArgsConstructor;
 public class CommentController {
 
     private final CommentService commentService;
+    private final NotificationService notificationService;
 
     @PostMapping("/{postId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> postComment(@RequestBody CommentPostDto dto, @PathVariable("postId") Long postId) {
         String username = getUsername();
-        commentService.postComment(dto, postId, username);
+        Long commentId = commentService.postComment(dto, postId, username);
+        notificationService.sendCommentNotification(postId, commentId, username);
         return ResponseEntity.ok().build();
     }
 
@@ -40,6 +43,7 @@ public class CommentController {
         @PathVariable("commentId") Long commentId) {
         String username = getUsername();
         commentService.postChildComment(dto, postId, commentId, username);
+        notificationService.sendChildCommentNotification(postId, commentId, username);
         return ResponseEntity.ok().build();
     }
 

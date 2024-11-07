@@ -30,13 +30,14 @@ public class CommentService {
     private final MemberService memberService;
     private final CommentLikeRepository commentLikeRepository;
 
-    public void postComment(CommentPostDto dto, Long postId, String username) {
+    public Long postComment(CommentPostDto dto, Long postId, String username) {
         Member findMember = memberService.findMember(username);
         Post findPost = postService.findPostById(postId);
         Comment comment = dto.toEntity();
         comment.setPost(findPost);
         comment.setWriter(findMember);
         commentRepository.save(comment);
+        return comment.getCommentId();
     }
 
     public void postChildComment(CommentPostDto dto, Long postId, Long commentId, String username) {

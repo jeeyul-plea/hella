@@ -67,7 +67,8 @@ public enum ExceptionCode {
      * # 500 Internal server error
      *
      */
-    INTERNAL_SERVER_ERROR(500, "Internal server error")
+    INTERNAL_SERVER_ERROR(500, "Internal server error"),
+    NOTIFICATION_CONNECTION_ERROR(500, "알림 연결에 실패했습니다.")
     ;
 
     private final int status;

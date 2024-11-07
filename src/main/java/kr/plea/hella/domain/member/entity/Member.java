@@ -51,6 +51,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(nullable = false, length = 12, unique = true)
+    private String phoneNumber;
+
     @OneToMany(mappedBy = "writer", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 
