@@ -27,7 +27,7 @@ public class NotificationService {
     private final CommentRepository commentRepository;
 
     public SseEmitter connectNotification(String username) {
-        SseEmitter sseEmitter = new SseEmitter(DEFAULT_TIMEOUT);
+        SseEmitter sseEmitter = emitterRepository.save(username, new SseEmitter(DEFAULT_TIMEOUT));
 
         sseEmitter.onCompletion(() -> emitterRepository.delete(username));
         sseEmitter.onTimeout(() -> emitterRepository.delete(username));
