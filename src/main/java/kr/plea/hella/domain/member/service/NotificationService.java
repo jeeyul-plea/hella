@@ -1,10 +1,15 @@
 package kr.plea.hella.domain.member.service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kr.plea.hella.domain.comment.entity.Comment;
 import kr.plea.hella.domain.comment.repository.CommentRepository;
@@ -22,9 +27,26 @@ import lombok.extern.slf4j.Slf4j;
 public class NotificationService {
     private final static Long DEFAULT_TIMEOUT = 3600000L;
     private final static String NOTIFICATION_NAME = "notify";
+    private final static String NOTIFICATION_CHANNEL = "notification-channel";
+
     private final EmitterRepository emitterRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
+
+    public void sendNotificationToRedis(String username, Long notificationId, String message) {
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put("username", username);
+        notificationData.put("notificationId", notificationId);
+        notificationData.put("message", message);
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(notificationData);
+            redisTemplate.convertAndSend(NOTIFICATION_CHANNEL, jsonMessage);
+        } catch (Exception e) {
+            log.error("Failed to send notification to Redis", e);
+        }
+    }
 
     public SseEmitter connectNotification(String username) {
         SseEmitter sseEmitter = emitterRepository.save(username, new SseEmitter(DEFAULT_TIMEOUT));
@@ -45,14 +67,14 @@ public class NotificationService {
         if (CommentWriter.equals(postWriterUsername)) {
             return;
         }
-        sendPostNotification(postWriterUsername, commentId);
+        sendNotificationToRedis(postWriterUsername, commentId, "게시글에 새로운 댓글이 달렸습니다.");
     }
 
     public void sendChildCommentNotification(Long postId, Long commentId, String childCommentWriter) {
         String parentWriterUsername = getParentWriterUsername(commentId);
         List<String> commentWriterUsernames = getChildWriterUsernames(commentId);
         if(!parentWriterUsername.equals(childCommentWriter)) {
-            sendCommentNotification(parentWriterUsername, commentId);
+            sendNotificationToRedis(parentWriterUsername, commentId, "내가 댓글을 남긴 댓글에 새로운 답글이 달렸습니다.");
         }
         if(commentWriterUsernames == null) {
             return;
@@ -61,32 +83,24 @@ public class NotificationService {
             if(commentWriterUsername.equals(childCommentWriter)) {
                 continue;
             }
-            sendCommentNotification(commentWriterUsername, commentId);
+            sendNotificationToRedis(commentWriterUsername, commentId, "내가 댓글을 남긴 댓글에 새로운 답글이 달렸습니다.");
         }
     }
 
-    public void sendPostNotification(String username, Long notificationId) {
-        doNotification(username, notificationId, "게시글에 새로운 댓글이 달렸습니다.");
-    }
-
-    public void sendCommentNotification(String username, Long notificationId) {
-        doNotification(username, notificationId, "내가 댓글을 남긴 댓글에 새로운 답글이 달렸습니다.");
-    }
-
-    private void doNotification(String username, Long notificationId, String message) {
-        emitterRepository.get(username).ifPresentOrElse(sseEmitter -> {
-            try {
-                sseEmitter.send(
-                    SseEmitter.event()
-                        .id(notificationId.toString())
-                        .name(NOTIFICATION_NAME)
-                        .data(message));
-            } catch (IOException e) {
-                emitterRepository.delete(username);
-                throw new RootException(ExceptionCode.NOTIFICATION_CONNECTION_ERROR);
-            }
-        }, () -> log.info("No  emitter found"));
-    }
+    // private void doNotification(String username, Long notificationId, String message) {
+    //     emitterRepository.get(username).ifPresentOrElse(sseEmitter -> {
+    //         try {
+    //             sseEmitter.send(
+    //                 SseEmitter.event()
+    //                     .id(notificationId.toString())
+    //                     .name(NOTIFICATION_NAME)
+    //                     .data(message));
+    //         } catch (IOException e) {
+    //             emitterRepository.delete(username);
+    //             throw new RootException(ExceptionCode.NOTIFICATION_CONNECTION_ERROR);
+    //         }
+    //     }, () -> log.info("No  emitter found"));
+    // }
 
     private String getParentWriterUsername(Long postId) {
         Comment findComment = commentRepository.findById(postId).orElseThrow(() -> new RootException(ExceptionCode.COMMENT_NOT_FOUND));
