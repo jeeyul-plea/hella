@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import kr.plea.hella.domain.comment.dto.CommentPostDto;
 import kr.plea.hella.domain.comment.dto.CommentUpdateDto;
 import kr.plea.hella.domain.comment.service.CommentService;
-import kr.plea.hella.domain.member.service.NotificationService;
+import kr.plea.hella.domain.member.service.notification.KafkaNotificationService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class CommentController {
 
     private final CommentService commentService;
-    private final NotificationService notificationService;
+    private final KafkaNotificationService notificationService;
 
     @PostMapping("/{postId}")
     @PreAuthorize("isAuthenticated()")
@@ -43,7 +43,7 @@ public class CommentController {
         @PathVariable("commentId") Long commentId) {
         String username = getUsername();
         commentService.postChildComment(dto, postId, commentId, username);
-        notificationService.sendChildCommentNotification(postId, commentId, username);
+        notificationService.sendChildCommentNotification(commentId, username);
         return ResponseEntity.ok().build();
     }
 
